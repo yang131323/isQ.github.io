@@ -1,0 +1,35 @@
+language: ruby
+rvm:
+  - 2.3.3
+# 设置只监听哪个分支
+branches:
+  only:
+    - source
+# 缓存，可以节省集成的时间
+cache:
+  apt: true
+  gem: true
+  directories:
+    - node_modules
+# tarvis生命周期执行顺序详见官网文档
+before_install:
+  - git config --global user.name "isQ"
+  - git config --global user.email "1509525854@qq.com"
+  - export TZ='Asia/Shanghai'
+  - chmod +x _travis.sh
+install:
+  - gem install jekyll
+  - gem install jekyll-paginate
+script:
+  - jekyll build
+after_success:
+  - ./_travis.sh
+
+env:
+ global:
+   - GH_USER_NAME: yang131323
+   - GH_REF: github.com/yang131323/isQ.github.io.git
+   - GITEE_USER_NAME: amazed
+   - GITEE_REF: gitee.com/amazed/amazed.git
+   - CODING_USER_NAME: sport
+   - CODING_REF: git.coding.net/sport/sport.git
