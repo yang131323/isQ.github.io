@@ -31,7 +31,6 @@ cat <<EOF >> README.md
 Job ID   | $TRAVIS_JOB_ID |
 Job NUM  | $TRAVIS_JOB_NUMBER |
 EOF
-
   git init
   git add --all .
   git commit -m "Update Blog By TravisCI With Build $TRAVIS_BUILD_NUMBER"
