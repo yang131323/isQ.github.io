@@ -6,7 +6,7 @@ email: zengjiean@gmail.com
 description: "你听好了，趁着年轻什么都别管 | isQ，Node.js & Vue.js Developer "
 keyword: "isQ, isQ博客, isQ Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js"
 url: "https://isqqy.com"              # your host, for absolute URL
-baseurl: "/isQ.github.io"                             # for example, '/blog' if your blog hosted on 'host/blog'
+baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog' /isQ.github.io
 
 # Publish posts or collection documents with a future date.
 future: true
