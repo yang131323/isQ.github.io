@@ -29,7 +29,7 @@ env:
  global:
    - GH_USER_NAME: yang131323
    - GH_REF: github.com/yang131323/isQ.github.io.git
-   - GITEE_USER_NAME: amazed
-   - GITEE_REF: gitee.com/amazed/amazed.git
-   - CODING_USER_NAME: sport
-   - CODING_REF: git.coding.net/sport/sport.git
+   - GITEE_USER_NAME: isQ
+   - GITEE_REF: https://gitee.com/isQQy/blog.git
+   - CODING_USER_NAME: isQ
+   - CODING_REF: https://git.dev.tencent.com/isQ/isQ.git
