@@ -32,7 +32,7 @@ tags:
 
 border的上边宽由content宽度决定（就是图片的内容width）下边框等于content宽度+左右两边border宽度，高度等于我们设置的border大小，而且边框相接的地方是各自一半；因此要用css形成一个三角形就很简单了，三角形只有三边，那么就设置内容width等于0，这样就达到了三边的目的了。但是宽度呢？由于border下边宽的高度由三部分组成：内容宽度、左、右border宽度。因此宽度可以通过设置border-left、border-right来完成，高度就直接设置border大小就可以了。形成过程如下图：
 
-![三角形生成原理](/img/post/20190426/border-detail.png)
+![三角形生成原理](/img/post/20190426/triangle.png)
 
 根据该推理得出的代码如下，可以将一下代码在自己本地编辑器进行验证：
 
