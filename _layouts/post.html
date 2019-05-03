@@ -173,6 +173,7 @@ layout: default
         var gitalk_owner = "{{site.gitalk_owner}}";
         var gitalk_admin = "{{site.gitalk_admin}}".split(',');
         var gittalk_identifier = "{{page.id}}";
+        console.log(gittalk_identifier);
         var gitalk = new Gitalk({
             clientID: gitalk_clientID,
             clientSecret: gitalk_clientSecret,
