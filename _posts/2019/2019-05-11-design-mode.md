@@ -38,12 +38,14 @@ function adapter (obj) {
   const rule = obj.rule || {
     vender: 'produce'
   }
-  obj = obj.data;
   for (let i in data) {
-    if (rule[i]) {
-      data[i] = (rule[i] in obj) ? obj[rule[i]] : data[i];
+    if (rule[i] && data.hasOwnProperty(rule[i])) {
+      throw new Error(`转换过程中发现键冲突，在rule中key：${i}，想转换为: ${rule[i]}`);
+    } else if (rule[i] && !data.hasOwnProperty(rule[i])) {
+      data[rule[i]] = data[i];
+      delete data[i];
     } else {
-      data[i] = (i in obj) ? obj[i] : data[i];
+      data[i] = data[i];
     }
   }
   return data;
