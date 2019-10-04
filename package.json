@@ -11,8 +11,8 @@
     "bugs": "https://github.com/yang131323/isQ.github.io/issues",
     "devDependencies": {
         "grunt": "~1.0.0",
-        "grunt-contrib-less": "~1.0.0",
-        "grunt-contrib-watch": "~1.0.0",
+        "grunt-contrib-less": "~2.0.0",
+        "grunt-contrib-watch": "~1.1.0",
         "grunt-banner": "~0.4.0",
         "grunt-contrib-uglify": "~3.0.0"
     },
