@@ -1,6 +1,6 @@
 language: ruby
 rvm:
-  - 2.3.3
+  - 2.4.0
 # 设置只监听哪个分支
 branches:
   only:
