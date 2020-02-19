@@ -1,5 +1,16 @@
 # Hux blog 模板
 
+### 如何启动及构建
+
+1. jekyll serve：启动一个开发服务器，将会运行在http://localhost:4000；
+
+2. jekyll serve --detach：功能和`jekyll serve`一样，只是会脱离终端在后台运行；如果想要关闭服务器，可以使用`kill -9 processId`，其中的processId可以使用`ps aux | grep jekyll`命令查看进程号；
+
+3. jekyll build：会将当前文件夹中的内容生成到./_site文件夹中；
+
+4. 更多详细命令可以查看[jekyll 官网](https://jekyllcn.com/docs/usage/)，*需要科学上网*。
+
+
 ### [我的博客在这里 &rarr;](http://huxpro.github.io)
 
 
