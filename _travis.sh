@@ -37,7 +37,7 @@ EOF
   # Github Pages
   git push --force --quiet "https://${REPO_TOKEN}@${GH_REF}" master:master
   # Gitee Pages
-  git push --force --quiet "ssh://${GITEE_USER_NAME}:${GITEE_TOKEN}@${GITEE_REF}" master:master
+  git push --force --quiet "https://${GITEE_USER_NAME}:${GITEE_TOKEN}@${GITEE_REF}" master:master
   # Coding Pages
   git push --force --quiet "https://${CODING_USER_NAME}:${CODE_TOKEN}@${CODING_REF}" master:master
 

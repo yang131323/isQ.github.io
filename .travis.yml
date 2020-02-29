@@ -31,5 +31,5 @@ env:
    - GH_REF: github.com/yang131323/isQ.github.io.git
    - GITEE_USER_NAME: isQQy
    - GITEE_REF: gitee.com/isQQy/blog.git
-   - CODING_USER_NAME: VhnnvGBCMp
+   - CODING_USER_NAME: VhnnvGBCMp # 访问令牌生成的随机用户名 - 访问令牌添加到travis作为环境变量
    - CODING_REF: e.coding.net/isQ/isQ.git
