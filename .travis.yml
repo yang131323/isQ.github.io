@@ -31,5 +31,5 @@ env:
    - GH_REF: github.com/yang131323/isQ.github.io.git
    - GITEE_USER_NAME: isQQy
    - GITEE_REF: gitee.com/isQQy/blog.git
-   - CODING_USER_NAME: isQ
+   - CODING_USER_NAME: VhnnvGBCMp
    - CODING_REF: e.coding.net/isQ/isQ.git
