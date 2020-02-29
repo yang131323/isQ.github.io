@@ -32,4 +32,4 @@ env:
    - GITEE_USER_NAME: isQQy
    - GITEE_REF: gitee.com/isQQy/blog.git
    - CODING_USER_NAME: isQ
-   - CODING_REF: git.dev.tencent.com/isQ/isQ.git
+   - CODING_REF: e.coding.net/isQ/isQ.git
