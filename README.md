@@ -1,4 +1,8 @@
-# Hux Blog
+# isQ Blog <- Hux Blog -- template
+
+## Translation
+
+ - [中文版文档 &rarr;](./README.md)
 
 ### [View Live Hux Blog &rarr;](https://huangxuan.me)
 
@@ -21,10 +25,6 @@ $ git clone git@github.com:Huxpro/huxblog-boilerplate.git
 
 - [**Hexo**](https://github.com/Kaijun/hexo-theme-huxblog) by @kaijun
 - [**React-SSR**](https://github.com/LucasIcarus/huxpro.github.io/tree/ssr) by @LucasIcarus
-
-## Translation
-
- - [中文版文档 &rarr;](./README.md)
 
 ## Releases
 
