@@ -3,7 +3,7 @@ layout:     post
 title:      "使用CSS生成常见图形"
 subtitle:   " \"之实现原理\""
 date:       2019-04-26 20:45:00
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/20190426/sunflower.jpg"
 catalog: true
 mathjax: true

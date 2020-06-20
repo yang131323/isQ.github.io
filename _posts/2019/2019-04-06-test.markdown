@@ -3,7 +3,7 @@ layout:     post
 title:      "这是一个测试文章"
 subtitle:   " \"开始很难，坚持也很难\""
 date:       2019-04-06 10:00:00
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/sun-tree.jpg"
 catalog: true
 mathjax: true

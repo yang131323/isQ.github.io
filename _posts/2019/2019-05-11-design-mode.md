@@ -3,7 +3,7 @@ layout:     post
 title: 'js常用设计模式'
 subtitle: '"之实战"'
 date:       2019-05-11 20:05:00
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/2019/20190511/dandelion.jpg"
 catalog: true
 mathjax: true

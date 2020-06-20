@@ -3,7 +3,7 @@ layout:     post
 title: '调用Html5plus API实现具有原生功能的web App之离线打包踩坑'
 subtitle: '"路漫漫其修远兮，吾将上下而求索"'
 date:       2019-05-20 06:52:52
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/2019/20190520/application.jpg"
 catalog: true
 mathjax: true

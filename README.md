@@ -1,4 +1,4 @@
-# isQ Blog <- Hux Blog -- template
+# is Q Blog <- Hux Blog -- template
 
 ## Translation
 

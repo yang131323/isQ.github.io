@@ -3,7 +3,7 @@ layout:     post
 title: 'apk数字签名实践'
 subtitle: '"之深入探索"'
 date:       2019-05-10 17:22:00
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/2019/20190510/networkSecutity.jpg"
 catalog: true
 mathjax: true

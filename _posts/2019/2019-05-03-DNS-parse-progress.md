@@ -3,7 +3,7 @@ layout:     post
 title: 'DNS解析过程'
 subtitle: '"之理解迭代查询和递归查询"'
 date:       2019-05-03 09:50:00
-author:     "isQ"
+author:     "is Q"
 header-img: "img/post/2019/20190503/network.jpg"
 catalog: true
 mathjax: true
