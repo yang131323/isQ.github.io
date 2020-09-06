@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="HTTP1.1 Headers速查清单 - is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  作为一个程序猿，了解常用的HTTP首部的意思及它的使用场景是必须的，但是由于http首部数量太多，平常经常接触到的就那么一些，不常用的很容易忘记具体意思，为了方便查看特整理如下。
+
+">
+    
+    <meta property="article:published_time" content="2020-06-28T05:39:39Z">
+    
+    
+    <meta property="article:author" content="is Q">
+    
+    
+    <meta property="article:tag" content="网络">
+    
+    <meta property="article:tag" content="HTTP1.1">
+    
+    <meta property="article:tag" content="首部">
+    
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/2020/06/28/http-headers/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>HTTP1.1 Headers速查清单 - is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/2020/06/28/http-headers/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post/2020/0627/http-headers.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post/2020/0627/http-headers.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E7%BD%91%E7%BB%9C" title="网络">网络</a>
+                        
+                        <a class="tag" href="/archive/?tag=HTTP1.1" title="HTTP1.1">HTTP1.1</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E9%A6%96%E9%83%A8" title="首部">首部</a>
+                        
+                    </div>
+                    <h1>HTTP1.1 Headers速查清单</h1>
+                    
+                    <h2 class="subheading">"HTTP首部及其使用场景解析"</h2>
+                    <span class="meta">Posted by is Q on June 28, 2020</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>作为一个程序猿，了解常用的HTTP首部的意思及它的使用场景是必须的，但是由于http首部数量太多，平常经常接触到的就那么一些，不常用的很容易忘记具体意思，为了方便查看特整理如下。</p>
+</blockquote>
+
+<h3 id="快速导航">快速导航</h3>
+<ul>
+  <li><a href="#快速导航">快速导航</a></li>
+  <li><a href="#通用首部">通用首部</a>
+    <ul>
+      <li><a href="#通用信息性首部">通用信息性首部</a></li>
+      <li><a href="#通用缓存首部">通用缓存首部</a></li>
+    </ul>
+  </li>
+  <li><a href="#请求首部">请求首部</a>
+    <ul>
+      <li><a href="#请求信息性首部">请求信息性首部</a></li>
+      <li><a href="#条件请求首部">条件请求首部</a></li>
+      <li><a href="#安全请求首部">安全请求首部</a></li>
+      <li><a href="#代理请求首部">代理请求首部</a></li>
+    </ul>
+  </li>
+  <li><a href="#响应首部">响应首部</a>
+    <ul>
+      <li><a href="#响应信息性首部">响应信息性首部</a></li>
+      <li><a href="#协商首部">协商首部</a></li>
+      <li><a href="#安全响应首部">安全响应首部</a></li>
+    </ul>
+  </li>
+  <li><a href="#实体首部">实体首部</a>
+    <ul>
+      <li><a href="#实体信息性首部">实体信息性首部</a></li>
+      <li><a href="#内容首部">内容首部</a></li>
+      <li><a href="#实体缓存首部">实体缓存首部</a></li>
+    </ul>
+  </li>
+</ul>
+
+<p>http首部主要分为五大部分：</p>
+
+ 	1. 通用首部：各种类型的报文（请求、响应报文）都可以使用，提供有关报文最基本的信息。
+ 	2. 请求首部：专用于请求报文的首部，用于给服务器提供相关信息，告诉服务器客户端的期望和能力。
+ 	3. 响应首部：专用于响应报文的首部，用于告诉客户端是谁在响应以及响应者的能力。
+ 	4. 实体首部：用于描述http报文的负荷（主体），提供了有关实体及其内容的相关信息。
+ 	5. 扩展首部：非标准首部，由应用开发者定义的首部。
+
+<h3 id="通用首部">通用首部</h3>
+
+<p>​	通用首部又可以分为以下几类：</p>
+
+ 	1. 通用信息性首部。
+ 	2. 通用缓存首部。
+
+<h4 id="通用信息性首部">通用信息性首部</h4>
+
+<ul>
+  <li>Connection：客户端和服务器可以指定与请求/响应连接相关选项；connection首部具有两个功能，第一个就是去除标准的逐跳首部（Connection、Transfer-Encoding、TE、Proxy-Authorization、Proxy-Authenticate、Upgrade、Keep-Alive和Trailer），也就是去掉不再转发给代理的首部，这些需要去除的首部在Connection首部中列出；第二个就是保持持久连接，HTTP1.1默认就是持久连接，如果客户端和服务器任意一端想中断连接就可以使用Connection: close，HTTP1.1以前的版本默认不是持久连接，因此如果想开启持久连接可以使用Connection: Keep-Alive。</li>
+  <li>Date：报文创建日期和时间。</li>
+  <li>MIME-Version：报文发送方遵循的MIME版本。</li>
+  <li>Trailer：如果报文采用分块传输编码（chunked transfer encoding），那么这个首部将会列出拖挂部分的首部集合（报文主体后面使用的首部集合）。</li>
+  <li>Transfer-Encoding：传输的报文采用的编码方式。</li>
+  <li>Update：发送方想要使用的升级版本或者协议。</li>
+  <li>Via：报文经过的中间节点（代理、网关等）。</li>
+  <li>Upgrade：用于检测http协议或者其他协议是否有可用的更高版本，其值也可以指定一个完全不同的协议名。</li>
+</ul>
+
+<h4 id="通用缓存首部">通用缓存首部</h4>
+
+<ul>
+  <li>
+    <p>Cache-Control：传输缓存指令，用于实现缓存机制，大致上可以分为缓存请求指令和缓存响应指令两大类：</p>
+
+    <ul>
+      <li>缓存请求指令：
+        <ol>
+          <li>no-store：不缓存客户端请求和服务器响应，即不进行缓存。</li>
+          <li>no-cache：在发布缓存资源之前，必须向源端服务器进行验证。</li>
+          <li>max-age：设置缓存有效时长，超过这个时长缓存将失效。</li>
+          <li>min-fresh：客户端期望获取在指定时间保持最新状态的响应。</li>
+          <li>max-stale：表明客户端愿意接受一个已经过期的资源，但是过期时间不能超过指定时长。</li>
+          <li>no-transform：不能够对资源进行转换或者转变，代理不能够修改Content-type、Content-Rage和Content-Encoding等HTTP头。</li>
+          <li>only-if-cached：客户端只接受已缓存的资源。</li>
+        </ol>
+      </li>
+      <li>
+        <p>缓存响应指令：</p>
+
+        <ol>
+          <li>no-store：不缓存客户端请求和服务器响应，即不进行缓存。</li>
+          <li>no-cache：在发布缓存资源之前，必须向源端服务器进行验证。</li>
+          <li>must-revalidate：在资源过期之后，未向服务器成功验证之前，不能够使用缓存进行响应。</li>
+          <li>no-transform：不能够对资源进行转换或者转变，代理不能够修改Content-type、Content-Rage和Content-Encoding等HTTP头。</li>
+          <li>public：允许任何对象缓存（代理服务器、客户端）响应，即使是通常不可缓存的内容（1. 没有max-age指令或者Expires消息头，2. post请求响应）。</li>
+          <li>private：响应只允许单用户（比如用户浏览器）进行缓存，任何中间节点都不能缓存响应。</li>
+          <li>max-age：设置缓存有效时长，超过这个时长缓存将失效。</li>
+          <li>proxy-revalidate：和must-revalidate的效果一样，但是仅用于共享缓存（比如代理），私有缓存会被忽略。</li>
+          <li>s-maxage：覆盖max-age和Expires首部，仅限用共享缓存，私有缓存会被忽略。</li>
+        </ol>
+
+        <p><code class="language-plaintext highlighter-rouge">💡ps：共享缓存和私有缓存的区别就是缓存的资源能否能提供给多个用户使用，私有缓存的资源只能给单用户使用。</code></p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p>Pragma：HTTP1.0规范中的首部，具体表现取决于实现，因此可能具有不一样的效果；除非是在只支持HTTP1.0版本的应用程序中才使用该首部，否则其他情况下都应该优先考虑Cache-Control首部；理论上该首部的效果和Cache-Control: no-cache的效果一样，但是因为具体表现得参考实现。</p>
+  </li>
+</ul>
+
+<h3 id="请求首部">请求首部</h3>
+
+<p>​	请求首部还可以分为以下几类：</p>
+
+ 	1. 请求信息性首部。
+ 	2. 条件请求首部。
+ 	3. 安全请求首部。
+ 	4. 代理请求首部。
+
+<h4 id="请求信息性首部">请求信息性首部</h4>
+
+<ul>
+  <li>Client-IP：提供了客户端的IP地址。</li>
+  <li>From：提供了客户端用户的邮件地址。</li>
+  <li>Host：提供了接受请求的服务器主机名和端口号。</li>
+  <li>Referer：提供了包含当前请求的文档URI。</li>
+  <li>UA-Color：提供了客户端显示器颜色相关信息。</li>
+  <li>UA-CPU：提供了客户端CPU的类型或制造商。</li>
+  <li>UA-Disp：提供了客户端显示器能力的相关信息。</li>
+  <li>UA-OS：提供了运行在客户端的操作系统名称和版本。</li>
+  <li>UA-Pixels：提供了客户端显示器的像素信息。</li>
+  <li>User-Agent：将发起请求的应用程序告诉服务器。</li>
+</ul>
+
+<p><code class="language-plaintext highlighter-rouge">💡ps：UA-*和Client-IP首部并不是规范中的内容，只是有客户端实现。</code></p>
+
+<hr />
+
+<ul>
+  <li>Accept：告诉服务器客户端可以接受（处理）的媒体类型，使用MIME类型表示。</li>
+  <li>Accept-Charset：告诉服务器客户端可以接受（处理）的字符集类型。</li>
+  <li>Accept-Encoding：告诉服务器客户端可以接受的内容编码方式。</li>
+  <li>Accept-Language：告诉服务器客户端可以接受哪些语言。</li>
+  <li>TE：告诉服务器可以使用哪些扩展传输编码。</li>
+</ul>
+
+<h4 id="条件请求首部">条件请求首部</h4>
+
+<ul>
+  <li>Expect：可以向服务器列出所期望的行为，HTTP1.1规范只列出了一个期望条件：100 Continue。</li>
+  <li>If-Match：如果实体标记与文档当前的实体标记一致，那么就获取此文档。</li>
+  <li>If-Modified-Since：如果在指定的日期时间（响应头Last-Modified）之后资源有被修改过，就重新获取这份资源，否则就使从缓存中取资源的副本。</li>
+  <li>If-None-Match：如果实体标记（Etag）与文档当前的实体标志不一致，就获取此文档。</li>
+  <li>If-Range：在一定条件下Range首部生效，值可以为etag或者时间。</li>
+  <li>If-Unmodified-Since：如果在指定的日期时间之后资源没有被修改过，就重新获取这份资源，否则就使从缓存中取资源的副本。</li>
+  <li>Range：如果服务器支持范围请求，则请求资源的指定的范围。</li>
+</ul>
+
+<h4 id="安全请求首部">安全请求首部</h4>
+
+<ul>
+  <li>Authorization：向服务器提供能够验证客户端身份的数据，由两部分组成 &lt;type&gt; &lt;credetials&gt;，type代表验证类型；credetials代表验证令牌。</li>
+  <li>Cookie：从客户端传送数据给服务端，通常情况下用于传输会话ID，传送给服务器的数据按理来说是来自于服务器上一次返回给客户端的。</li>
+  <li>Cookie2：用来说明请求端的cookie版本。</li>
+</ul>
+
+<h4 id="代理请求首部">代理请求首部</h4>
+
+<ul>
+  <li>Max-Farward：在将请求发送给源端服务器时，经过代理服务器和网关等中间节点的最大次数。</li>
+  <li>Proxy-Authorization：与Authorization首部的作用一样，只是这里是客户端提供给代理服务器的用于验证身份的凭证，通常是在服务器返回407状态码及Proxy-Authenticate的时候发送。</li>
+  <li>Proxy-Connection：与Connection首部的作用一样，只是这里是在与代理建立连接的时候使用。</li>
+</ul>
+
+<h3 id="响应首部">响应首部</h3>
+
+<p>​	响应首部也可以分为以下几类：</p>
+
+ 	1. 响应信息性首部。
+ 	2. 协商首部。
+ 	3. 安全响应首部。
+
+<h4 id="响应信息性首部">响应信息性首部</h4>
+
+<ul>
+  <li>Age：表示响应已存在时间（从创建响应开始计算，单位秒）。</li>
+  <li>Public：表示服务器为该资源支持的请求方法列表。</li>
+  <li>Retry-After：如果资源不可用的话，应该在时间点之后再次进行尝试；通常用于503状态码服务器暂时维护或者升级的时候，用于告诉客户端服务大概多久会恢复。</li>
+  <li>Server：服务器应用程序名称和版本号。</li>
+  <li>Title：对HTML文档来说，就是HTML文档的源端给出的标题。</li>
+  <li>Warning：对报文当前状态可能存在问题进行说明，ps：《HTTP权威指南》说它只是一个响应首部，但是MDN说它是一个通用首部。</li>
+</ul>
+
+<h4 id="协商首部">协商首部</h4>
+
+<ul>
+  <li>Accept-Ranges：告诉客户端服务器支持范围请求，具体值说明的是范围请求使用的单位。</li>
+  <li>Vary：需要查看其他首部的列表，会影响之后的响应，之后的请求只有vary列出来的所有首部的值完全相同时才会使用缓存（MDN的例子似乎表明请求首部和响应首部对应），否则不会当作是同一个请求。</li>
+</ul>
+
+<h4 id="安全响应首部">安全响应首部</h4>
+
+<ul>
+  <li>Proxy-Authenticate：代理对客户端的质询，表示获取代理上资源需要采用的身份验证方式。</li>
+  <li>Set-Cookie：服务器向客户端设置cookie，通常情况下使用该首部来设置会话ID传送给客户端。</li>
+  <li>Set-Cookie2：与Set-Cookie首部的作用一样，但是目前已经被废弃。</li>
+  <li>www-Authenticate：服务器客户端的质询，表示获取服务器上的资源需要采用的身份验证方式。</li>
+</ul>
+
+<h3 id="实体首部">实体首部</h3>
+
+<p>​	实体首部可以细分为以下几类：</p>
+
+ 	1. 实体信息性首部。
+ 	2. 内容首部。
+ 	3. 实体缓存首部。
+
+<h4 id="实体信息性首部">实体信息性首部</h4>
+
+<ul>
+  <li>Allow：列出了可以对此资源执行的请求方法列表。</li>
+  <li>Location：用于告诉客户端，资源的实际位于何处（URL）。</li>
+</ul>
+
+<h4 id="内容首部">内容首部</h4>
+
+<ul>
+  <li>Content-Base：解析主体中的相对URL时使用的基础URL。</li>
+  <li>Content-Encoding：对主体执行的编码方式。</li>
+  <li>Content-Language：解析主体时最适应使用的语言。</li>
+  <li>Content-Length：主体长度或者尺寸。</li>
+  <li>Content-Location：资源实际所在的位置。</li>
+  <li>Content-MD5：主体的md5校验和。</li>
+  <li>Content-Range：在整个资源中此实体表示的字节范围。</li>
+  <li>Content-Type：该主体的对象类型（MIME类型）。</li>
+</ul>
+
+<h4 id="实体缓存首部">实体缓存首部</h4>
+
+<ul>
+  <li>Etag：实体特定版本的标志符，用于缓存的强校验。</li>
+  <li>Expires：该值指定日期时间之后资源失效，需要从新进行对资源进行验证。</li>
+  <li>Last-Modified：资源最后一次被修改的日期和时间。</li>
+</ul>
+
+<p><strong>参考资料</strong></p>
+<ul>
+  <li>《HTTP权威指南》</li>
+  <li>MDN</li>
+</ul>
+
+                <!-- copyright start -->
+                <div>
+                    
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      is Q
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.isqqy.com/2020/06/28/http-headers/" title="HTTP1.1 Headers速查清单">https://www.isqqy.com/2020/06/28/http-headers/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用
+      <a
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+        rel="external nofollow"
+        target="_blank"
+      >
+        CC BY-NC-SA 3.0
+      </a>
+      许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+                </div>
+                <!-- copyright end -->
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2020/06/21/http-status-code-list/" data-toggle="tooltip" data-placement="top" title="HTTP1.1状态码速查清单">
+                        Previous<br>
+                        <span>HTTP1.1状态码速查清单</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/09/07/at-centos-zero-start-nas/" data-toggle="tooltip" data-placement="top" title="在centos从0开始搭建属于自己的NAS">
+                        Next<br>
+                        <span>在centos从0开始搭建属于自己的NAS</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+                
+                <!-- Gitalk 评论框 start -->
+                <div id="gitalk-container"></div>
+                <!-- Gitalk 评论框 end -->
+                
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=%E8%AE%B0%E5%BD%95"
+                    title="记录"
+                    rel="6">记录</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="2">网络</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=HTTP1.1"
+                    title="HTTP1.1"
+                    rel="2">HTTP1.1
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="https://mapo.io/">Mapo</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    SVG: {
+      scale: 90
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- gitalk 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    async("//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js",function(){
+        var gitalk_clientID = "e9bbe5cab49497965c55";
+        var gitalk_clientSecret = "9275e5b23e992c045ea1b88cee2299fe5def3581";
+        var gitalk_repo = "mgblog-comment";
+        var gitalk_owner = "yang131323";
+        var gitalk_admin = "yang131323".split(',');
+        var gittalk_identifier = "/2020/06/28/http-headers";
+        console.log(gittalk_identifier);
+        var gitalk = new Gitalk({
+            clientID: gitalk_clientID,
+            clientSecret: gitalk_clientSecret,
+            repo: gitalk_repo,
+            owner: gitalk_owner,
+            admin: gitalk_admin,
+            id: gittalk_identifier,      // Ensure uniqueness and length less than 50
+            distractionFreeMode: true  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    })
+</script>
+<!-- gitalk 公共JS代码 end -->
+
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

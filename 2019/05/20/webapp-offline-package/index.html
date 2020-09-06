@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="调用Html5plus API实现具有原生功能的web App之离线打包踩坑 - is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  “路漫漫其修远兮，吾将上下而求索”
+
+">
+    
+    <meta property="article:published_time" content="2019-05-20T14:52:52Z">
+    
+    
+    <meta property="article:author" content="is Q">
+    
+    
+    <meta property="article:tag" content="5+ APP">
+    
+    <meta property="article:tag" content="HTML5plus">
+    
+    <meta property="article:tag" content="apk">
+    
+    <meta property="article:tag" content="离线打包">
+    
+    <meta property="article:tag" content="记录">
+    
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/2019/05/20/webapp-offline-package/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>调用Html5plus API实现具有原生功能的web App之离线打包踩坑 - is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/2019/05/20/webapp-offline-package/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post/2019/20190520/application.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post/2019/20190520/application.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=5%2B+APP" title="5+ APP">5+ APP</a>
+                        
+                        <a class="tag" href="/archive/?tag=HTML5plus" title="HTML5plus">HTML5plus</a>
+                        
+                        <a class="tag" href="/archive/?tag=apk" title="apk">apk</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E7%A6%BB%E7%BA%BF%E6%89%93%E5%8C%85" title="离线打包">离线打包</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E8%AE%B0%E5%BD%95" title="记录">记录</a>
+                        
+                    </div>
+                    <h1>调用Html5plus API实现具有原生功能的web App之离线打包踩坑</h1>
+                    
+                    <h2 class="subheading">"路漫漫其修远兮，吾将上下而求索"</h2>
+                    <span class="meta">Posted by is Q on May 20, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>“路漫漫其修远兮，吾将上下而求索”</p>
+</blockquote>
+
+<h3 id="前言">前言</h3>
+<p>这是在一个原有web项目上进行的一成封装，使其成为一个apk格式的安装包，还可以在你的web项目中调用Html5plus Api来实现一些原生功能，官方文档<a href="http://www.html5plus.org/doc/zh_cn/webview.html">html5+规范</a>，请慎重入坑，主要是官方文档写的不太好以及几乎没有社区，只能自己一个一个的爬。<br />
+以前我们的一个5+应用都是使用hbuilder进行云打包的，但是最近快要上线了，所以需要对接个推，接入个推就需要进行离线打包，因此有了这笔记！</p>
+
+<h3 id="下载h5sdk">下载H5+SDK</h3>
+
+<p>H5+应用离线打包的第一步，就是直接去官网下载相应版本的SDK：<a href="http://ask.dcloud.net.cn/article/103">HTML 5+ SDK 更新日志</a>；最好下载最新版本的sdk，因为最新版本的sdk会修复以前出现的Bug（如果你不想自己踩太多的坑的话，我推荐下载最新版本的sdk包）。不要担心官方关于离线打包的文档和你使用的版本对应不上，然后造成自己离线打包出现重重阻碍，选择最新的sdk只会让你开头痛苦一下，后面你会比较顺利；不然后面你可能就是不断的打补丁，这个过程估计更痛苦，而且遇上SDK bug那么你还是得更新。</p>
+
+<h3 id="离线打包准备工作">离线打包准备工作</h3>
+
+<p>如果自己的电脑上没有Android Studio（后面AS均代表该软件）的话记得去下载一个，我这里使用的是Android Studio3.4.1，先讲一下SDK中各文件夹的用途，如下图：</p>
+
+<p><img src="/img/post/2019/20190520/one.png" alt="one" /></p>
+
+<p>如图所示，我这里使用的是现在最新的sdk1.9.9.62327，其中目录结构如下：</p>
+
+<ol>
+  <li>两个markdown文件都是说明使用该版本的SDK进行离线打包需要注意的一些东西，比如说某某功能不能和另一功能同时存在。</li>
+  <li>SDK就不用说了，就是真正的内容，其中的AndroidManifest.xml是安卓配置文件，assets是我们离线打包时需要放置app/src/main/目录下的，完整路径为app/src/main/assets；libs是一些功能依赖包文件（比如个推、分享等等）。</li>
+  <li>HBuilder-Hello和HBuilder-integerate-As都是离线打包demo，但是如果使用Android Studio进行离线打包的话请点击HBuilder-integerate-As，如果是使用Eclipse的话可以试一下另一版本（我没试过）。</li>
+  <li>在uni-app中使用5+插件demo、UniPlugin-Hello-AS应该都是开发插件相关demo吧！由于此次没有用过这两个文件夹，因此它们的用处暂时不明白。</li>
+  <li>Feature-Android.xls是权限清单，在AndroidManifest.xml配置文件需要使用（调用相应的功能需要相应的权限），可以用来参考。</li>
+</ol>
+
+<p>打开Android Studio，使用以下方式打开HBuilder-integerate-As这个demo：</p>
+
+<p><img src="/img/post/2019/20190520/two.png" alt="two" /></p>
+
+<p>有两种方式进行离线打包，我上面说的是我推荐的，还有一种的话直接使用start a new Android Studio project新建一个原生安卓项目，看一下官方文档后面操作几乎和我说的这个教程区别不大，就是有些文件你需要自己删除、添加，具体教程：<a href="https://ask.dcloud.net.cn/article/13232">使用新版本5+SDK创建最简Android原生工程（Android studio）</a>，有很多文件都没有，踩的坑会比较多；我推荐的这种打包方式官方文档为：<a href="http://ask.dcloud.net.cn/article/508">Android平台本地（离线）打包指南 - Android Studio</a>；按照官方文档的步骤的话，打开demo之后直接编译一遍，用来判断官方demo是否能够正常运行，如果demo不能运行下面的步骤就没有意义了，可以考虑换一个SDK包了。如果能正常运行，官方文档之后的第一步是引入依赖包，如果你是按照我推荐的这个方式来离线打包的，</p>
+
+<p><img src="/img/post/2019/20190520/three.png" alt="three" /></p>
+
+<p>这一步可以直接跳过，因为这个demo几乎已经集成所有的功能，依赖已经引入了，如果你再从新引入，可能会导致AndroidManifest.xml配置文件合并失败，所以信我的，别给自己找麻烦，后面功能正常之后再参考Feature-Android.xls引入相应依赖包和添加权限。<br />
+官方文档的第二步分是配置应用权限</p>
+
+<p><img src="/img/post/2019/20190520/four.png" alt="four" /></p>
+
+<p>也可以直接跳过，demo也集成了，这就是我推荐的原因。<br />
+第三步配置第三方库的数据</p>
+
+<p><img src="/img/post/2019/20190520/five.png" alt="five" /></p>
+
+<p>也可以先跳过等到引入程序之后编译成功再配置。</p>
+
+<h3 id="离线打包">离线打包</h3>
+
+<p>如果你是直接离线打包并没有使用过云打包的话，那么你需要将你代码build后的文件使用hbuilder（x）进行离线打包（使用过云打包的应该看到过）如图：</p>
+
+<p><img src="/img/post/2019/20190520/six.png" alt="six" /></p>
+
+<p>离线打包在顶部的发行功能菜单中，如果你还只有一个dist文件夹（build的包）那么你需要使用hubuilderx先建一个空的5+app项目，这样你就会有一个manifest文件，然后你可以将你的dist文件夹下面的内容拷贝至该项目根目录下，然后点击上面的manifest.json文件可以可视化配置一些信息（启动图标、sdk配置等）。配置完成之后点击发行&gt;原生app-本地打包&gt;生成本地打包app资源，放置的位置为</p>
+
+<p><img src="/img/post/2019/20190520/seven.png" alt="seven" /></p>
+
+<p>我们的demo项目下的/app/src/main/assets/apps/XXXX/www/目录底下（其中XXXX为你的appId，注意：在AS左边的文件结构显示AcmApp.www代表AcmApp/www这是两个文件夹，不要把文件命名为AcmApp.www，不然上面就变成/app/src/main/assets/apps/XXXX.www了，这里是一个固定的格式appid/www，一定要按照这个格式，否则会导致编译失败），appId在hbuilderx可以查看manifest.json可视化界面或者直接查看manifest.json代码文件，一般你在使用hbuilderx离线打包时这一段XXXX/www/会自动生成，你只需要选择好放置的路径就行（你打开demo的/app/src/main/assets/apps路径下）。</p>
+
+<p>到这里几乎完成一半了，现在要开始改改配置。</p>
+
+<h3 id="修改相应配置">修改相应配置</h3>
+
+<p>在你（AS中）打开的demo项目中找到AndroidManifest.xml，修改步骤可以产看官方文档：</p>
+
+<p><img src="/img/post/2019/20190520/eight.png" alt="eight" /></p>
+
+<p>由于这里官方文档已经说的很详细了，所以我就不多说了，图标配置也说的很详细了，补充一点</p>
+
+<ol>
+  <li>icon.png代表桌面显示图标。</li>
+  <li>push.png代表推送显示图标（没试验过，因为我们应用icon和push使用的为一张图片）。</li>
+  <li>splash.png（应用启动页面）。</li>
+</ol>
+
+<p>注意：这里的名字一定要按这个格式命名。</p>
+
+<p>修改/app/src/main/assets/data/dcloud_control.xml文件，appid和manifest.json文件的id一样，appver和manifest.json文件的version.name一样，如下图：</p>
+
+<p><img src="/img/post/2019/20190520/nine.png" alt="nine" /></p>
+
+<p>最后修改/app/build.gradle文件，如下图：</p>
+
+<p><img src="/img/post/2019/20190520/ten.png" alt="ten" /></p>
+
+<p>其中applicationId配置为你的包名。</p>
+
+<p>如果你是用另一种方法进行离线打包，那你需要按照这种方式一步步从demo里面拷贝文件并进行修改，同时我说的SDK/assets/data文件放置在你离线项目下这个位置就行：</p>
+
+<p><img src="/img/post/2019/20190520/eleven.png" alt="eleven" /></p>
+
+<p>但是没有apps文件？没办法你只能在从demo项目中拷贝过来，然后将H57991E95这个文件夹替换成你的离线包（Hbuilderx通过发行&gt;原生app-本地打包&gt;生成本地打包app资源生成的包）记住一定是这种格式appid/www/真正的资源文件，这也是我不推荐使用这种方式从零开始，如果你有一定的Android功底可以这样。</p>
+
+<h3 id="androidmanifestxml重要配置项配置">AndroidManifest.xml重要配置项配置</h3>
+
+<p>不出意外上面的步骤已经让你成功离线打包了，而且应该是可以成功编译成功的，但是编译成功不代表你的应用所有功能都正常，这里有几个关于AndroidManifest.xml重要的配置项。</p>
+
+<ol>
+  <li>
+    <p>个推的配置项</p>
+
+    <p>首先得添加权限，检查一下你的项目是否添加：</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- 配置在manifest节点中 --&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.INTERNET"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.READ_PHONE_STATE"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.ACCESS_NETWORK_STATE"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.WAKE_LOCK"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.RECEIVE_BOOT_COMPLETED"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.WRITE_EXTERNAL_STORAGE"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.VIBRATE"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.ACCESS_WIFI_STATE"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"android.permission.CALL_PHONE"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;uses-permission</span> <span class="na">android:name=</span><span class="s">"getui.permission.GetuiService.你的app包名"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;permission</span>
+    <span class="na">android:name=</span><span class="s">"getui.permission.GetuiService.你的app包名"</span>
+    <span class="na">android:protectionLevel=</span><span class="s">"normal"</span> <span class="nt">/&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>后面这两项server在同一设备上只能同时存在一个，因此配置了个推的就不要配置米推了。推送还需要做如下配置（还需要配置meta-data第三方库数据，可以参考官方文档，这里很简单）：</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+</pre></td><td class="rouge-code"><pre>!-- 配置在application节点中 --&gt;
+<span class="nt">&lt;receiver</span> <span class="na">android:name=</span><span class="s">"io.dcloud.feature.apsGt.GTNotificationReceiver"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;intent-filter&gt;</span>
+            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"android.intent.action.BOOT_COMPLETED"</span><span class="nt">/&gt;</span>
+            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"你的包名.__CREATE_NOTIFICATION"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"你的包名.__REMOVE_NOTIFICATION"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"你的包名.__CLEAR_NOTIFICATION"</span> <span class="nt">/&gt;</span>
+            <span class="nt">&lt;action</span> <span class="na">android:name=</span><span class="s">"你的包名.__CLILK_NOTIFICATION"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/intent-filter&gt;</span>
+    <span class="nt">&lt;/receiver&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>上面标注包名的地方一定注意替换成你的包名（反向域名格式）。</p>
+  </li>
+  <li>
+    <p>由于Android7.0+为了提高安全性对文件的权限控制更加严格，因此runtime的许多方法都会失效，我遇到的就有install（更新app）、打开文件（openFile），涉及到文件的应该都会有问题，而且还不会报错，这样根本让我无法定位，最后看到一篇博文才让我摆脱了这个问题，不然差一点就放弃了，在配置文件application节点中添加如下代码：</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+</pre></td><td class="rouge-code"><pre><span class="nt">&lt;provider</span>
+        <span class="na">android:name=</span><span class="s">"android.support.v4.content.FileProvider"</span>
+        <span class="na">android:authorities=</span><span class="s">"你的包名.fileprovider"</span>
+        <span class="na">android:exported=</span><span class="s">"false"</span>
+        <span class="na">android:grantUriPermissions=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;meta-data</span>
+            <span class="na">android:name=</span><span class="s">"android.support.FILE_PROVIDER_PATHS"</span>
+            <span class="na">android:resource=</span><span class="s">"@xml/file_provider"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/provider&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>原本那篇博文还需要在src/main/res目路下添加xml/file_proviser.xml，但是我没添加一样可以，如果你按照上面配置runtime功能还是不正常可以尝试配置一下，博文链接：<a href="https://blog.csdn.net/yy1300326388/article/details/52787853">解决 Android N 7.0 上 报错：android.os.FileUriExposedException</a>；</p>
+  </li>
+  <li>
+    <p>还有一个值得注意的地方就是：有很多需要把它demo的包名替换成你自己的包名，但是有一些地方你是不能替换成你自己的包名的，一旦替换轻则某些功能异常，重则直接编译不通过，但是怎么区分呢？一般改动的时候你先把它原来的值删了，然后在按着它的值再敲一遍，不要复制，如果提示中有它以前那个值代表这是一个引用其他地方的文件，你不能删除；还有一种方法，配置引用的大部分依赖来自于/src/main/java文件夹，你在纠结是否把包名替换成你的包名的时候，去该路径找相应文件如com.HBuilder.integrate.SDK_WebView（我上面提过在AS文件结构.代表什么意思），则查看java文件夹下是否有com/Hbuilder/intergrate文件夹，并且还有SDK_WebView文件，如果有那么你就不能替换成你的包名。简单一点的方法就是，凡是配置文件里面的activity节点里的包名就要慎重替换，几个基本不能替换的：ActivityEntry、SDK_WebView、SDK_WebApp替换之后会导致直接不能通过编译，配置如下：</p>
+
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+</pre></td><td class="rouge-code"><pre><span class="c">&lt;!-- 其中com.HBuilder.integrate你的参考你java文件夹下的目录结构，也许后面更新的结构有所改变 --&gt;</span>
+<span class="nt">&lt;activity</span>
+        <span class="na">android:name=</span><span class="s">"com.HBuilder.integrate.ActivityEntry"</span>
+        <span class="na">android:configChanges=</span><span class="s">"orientation|keyboardHidden"</span>
+        <span class="na">android:label=</span><span class="s">"@string/app_name"</span>
+        <span class="na">android:launchMode=</span><span class="s">"singleTask"</span>
+        <span class="na">android:screenOrientation=</span><span class="s">"user"</span>
+        <span class="na">android:windowSoftInputMode=</span><span class="s">"adjustResize"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/activity&gt;</span>
+    <span class="nt">&lt;activity</span>
+        <span class="na">android:name=</span><span class="s">"com.HBuilder.integrate.SDK_WebApp"</span>
+        <span class="na">android:configChanges=</span><span class="s">"orientation|keyboardHidden|screenSize|keyboard|navigation|mcc|mnc|fontScale"</span>
+        <span class="na">android:screenOrientation=</span><span class="s">"user"</span>
+        <span class="na">android:theme=</span><span class="s">"@style/DCloudTheme"</span><span class="nt">&gt;</span> <span class="c">&lt;!-- 离线配置沉浸式  SDK_WebApp  作为apk入口时  必须设置 SDK_WebApp   的主题为android:theme="@style/DCloudTheme" --&gt;</span>
+    <span class="nt">&lt;/activity&gt;</span>
+    <span class="nt">&lt;activity</span>
+        <span class="na">android:name=</span><span class="s">"com.HBuilder.integrate.SDK_WebView"</span>
+    <span class="na">android:configChanges=</span><span class="s">"orientation|keyboardHidden|screenSize|keyboard|navigation|mcc|mnc|fontScale"</span>
+        <span class="na">android:screenOrientation=</span><span class="s">"sensor"</span>
+        <span class="na">android:theme=</span><span class="s">"@style/DCloudTheme"</span><span class="nt">&gt;&lt;/activity&gt;</span>
+</pre></td></tr></tbody></table></code></pre></div>    </div>
+
+    <p>h5+应用离线打包的坑暂时还只踩到这里，以后遇到再过来补充。</p>
+  </li>
+</ol>
+
+<p>最后添加几个有参考价值的官方文档，官方文档确实坑，但是这几个文档你还是可以当作字典一样做参考：</p>
+
+<ol>
+  <li><a href="https://ask.dcloud.net.cn/article/100">5+ API使用的Android权限列表</a></li>
+  <li><a href="https://ask.dcloud.net.cn/article/35861">Android动态权限申请</a></li>
+  <li>离线打包关于Android7+文件操作异常问答：<a href="http://ask.dcloud.net.cn/article/12923">Android7解决plus.runtime.openFile方法打开文件无响应问题（需本地打包并修改SDK）</a></li>
+</ol>
+
+                <!-- copyright start -->
+                <div>
+                    
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      is Q
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.isqqy.com/2019/05/20/webapp-offline-package/" title="调用Html5plus API实现具有原生功能的web App之离线打包踩坑">https://www.isqqy.com/2019/05/20/webapp-offline-package/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用
+      <a
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+        rel="external nofollow"
+        target="_blank"
+      >
+        CC BY-NC-SA 3.0
+      </a>
+      许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+                </div>
+                <!-- copyright end -->
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/05/12/design-mode/" data-toggle="tooltip" data-placement="top" title="js常用设计模式">
+                        Previous<br>
+                        <span>js常用设计模式</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2020/06/21/http-status-code-list/" data-toggle="tooltip" data-placement="top" title="HTTP1.1状态码速查清单">
+                        Next<br>
+                        <span>HTTP1.1状态码速查清单</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+                
+                <!-- Gitalk 评论框 start -->
+                <div id="gitalk-container"></div>
+                <!-- Gitalk 评论框 end -->
+                
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=%E8%AE%B0%E5%BD%95"
+                    title="记录"
+                    rel="6">记录</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="2">网络</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=HTTP1.1"
+                    title="HTTP1.1"
+                    rel="2">HTTP1.1
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="https://mapo.io/">Mapo</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    SVG: {
+      scale: 90
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- gitalk 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    async("//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js",function(){
+        var gitalk_clientID = "e9bbe5cab49497965c55";
+        var gitalk_clientSecret = "9275e5b23e992c045ea1b88cee2299fe5def3581";
+        var gitalk_repo = "mgblog-comment";
+        var gitalk_owner = "yang131323";
+        var gitalk_admin = "yang131323".split(',');
+        var gittalk_identifier = "/2019/05/20/webapp-offline-package";
+        console.log(gittalk_identifier);
+        var gitalk = new Gitalk({
+            clientID: gitalk_clientID,
+            clientSecret: gitalk_clientSecret,
+            repo: gitalk_repo,
+            owner: gitalk_owner,
+            admin: gitalk_admin,
+            id: gittalk_identifier,      // Ensure uniqueness and length less than 50
+            distractionFreeMode: true  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    })
+</script>
+<!-- gitalk 公共JS代码 end -->
+
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

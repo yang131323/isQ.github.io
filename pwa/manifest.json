@@ -1,0 +1,19 @@
+{
+  "name": "is Q Blog",
+  "short_name": "is Q",
+  "description": "你听好了，趁着年轻什么都别管。",
+  "icons": [{
+    "src": "icons/128.png",
+    "sizes": "128x128",
+    "type": "image/png"
+  }, {
+    "src": "icons/512.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }],
+  "background_color": "#fff",
+  "theme_color": "#000",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait"
+}

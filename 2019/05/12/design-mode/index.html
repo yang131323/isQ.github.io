@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="js常用设计模式 - is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  js常用设计模式之实战
+
+">
+    
+    <meta property="article:published_time" content="2019-05-12T04:05:00Z">
+    
+    
+    <meta property="article:author" content="is Q">
+    
+    
+    <meta property="article:tag" content="设计模式">
+    
+    <meta property="article:tag" content="记录">
+    
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/2019/05/12/design-mode/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>js常用设计模式 - is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/2019/05/12/design-mode/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post/2019/20190511/dandelion.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post/2019/20190511/dandelion.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F" title="设计模式">设计模式</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E8%AE%B0%E5%BD%95" title="记录">记录</a>
+                        
+                    </div>
+                    <h1>js常用设计模式</h1>
+                    
+                    <h2 class="subheading">"之实战"</h2>
+                    <span class="meta">Posted by is Q on May 12, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>js常用设计模式之实战</p>
+</blockquote>
+
+<h3 id="适配器模式">适配器模式</h3>
+
+<p>适配器模式就是充当着一个转换器的作用。举个例子吧，比如我们有一个只有VGA接口的显示器，但是现在我们电脑一般都只支持HDMI接口，这时怎么办？对，就是找一个转换器，将显示器和电脑链接起来。而我们的适配器模式和这个转换器的功能相同。适配器模式前端应该是经常使用的，根据reshful接口风格，传回来的数据字段都是前后端协商的，难免后台有改动的时候，如果这个字段我们在成百上千的地方使用过，难道我们一个一个的改？有一个还不错的方法就是vscode 全局搜索，全局替换，但是万一误伤呢（其他地方用了这个字段，但是并不是代表这个接口返回的数据）？这时候适配器模式就可以派上用场了。在前端接受后端数据的地方写一个适配器，将数据转化之后再分发到各个页面，这样既不影响我们的前端的显示，同时我们的改动也非常小，只要配置一下规则就行了。适配器实现的简单的例子如下：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+ * 场景：假设后台和前端对接数据，一般来说前端与后台协商的字段不会轻易变动，
+ * 但是这只是一种协商而已。因此一旦后台某个字段改变了，刚好前端有几十
+ * 甚者上百个地方使用了，如果一个个改。。。。
+ * 使用适配器模式将可以化解这种尴尬，只有只考虑一层，多层思想一样
+ * @param {Object} obj
+ * @returns {Object}
+ */</span>
+<span class="kd">function</span> <span class="nx">adapter</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">data</span> <span class="o">||</span> <span class="p">{</span>
+    <span class="na">price</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="na">num</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="na">vender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">changde</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">chrome</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">id</span><span class="p">:</span> <span class="dl">'</span><span class="s1">68.0.0</span><span class="dl">'</span>
+  <span class="p">};</span>
+  <span class="kd">const</span> <span class="nx">rule</span> <span class="o">=</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">rule</span> <span class="o">||</span> <span class="p">{</span>
+    <span class="na">vender</span><span class="p">:</span> <span class="dl">'</span><span class="s1">produce</span><span class="dl">'</span>
+  <span class="p">}</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="k">in</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s2">`转换过程中发现键冲突，在rule中key：</span><span class="p">${</span><span class="nx">i</span><span class="p">}</span><span class="s2">，想转换为: </span><span class="p">${</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">data</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]))</span> <span class="p">{</span>
+      <span class="nx">data</span><span class="p">[</span><span class="nx">rule</span><span class="p">[</span><span class="nx">i</span><span class="p">]]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+      <span class="k">delete</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">=</span> <span class="nx">data</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="nx">data</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="装饰器模式">装饰器模式</h3>
+
+<p>装饰器模式是指在不改动原有功能的基础上添加新功能。说一个实际点的情况吧，你现在有一个当点击某个dom时有一段js动画，但是你不知道这个dom是否已经有同事写过点击事件绑定了，如果已经有同事写过了，那么直接给dom绑定你将覆盖同事的辛辛苦苦写的代码（估计想砍你的心都有了）。关于这个例子装饰器模式示例如下：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+ * 场景：假设有一个dom当点击它的时候调用某一个函数，现在需求改变（在你写好之后），现在要增加
+ * 某个操作。当然只有一个地方使用你可以直接改一改就行，但是情况并不是你想的那样，有上百的dom
+ * 都有这个需求，这时候你一个个的改？
+ * @param {String} id 要操作的元素id
+ * @param {Function} fn 你要加的新功能
+ */</span>
+<span class="kd">function</span> <span class="nx">decarator</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">dom</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">dom</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">function</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">dom</span><span class="p">.</span><span class="nx">onclick</span><span class="p">;</span>
+    <span class="nx">dom</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">temp</span><span class="p">();</span>
+      <span class="nx">fn</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nx">dom</span><span class="p">.</span><span class="nx">onclick</span> <span class="o">=</span> <span class="nx">fn</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="单例模式">单例模式</h3>
+
+<p>单例模式看名称就知道是什么意思了，如果可以实例化的则只能实例化一次，后面的实例化都是返回的都是第一次实例化的实例。为什么需要这种模式呢？想象一下某个实例我们使用了成百上千次，但是其实并不需要每次都实例化，我们只需要借用一个实例来调用它的方法，但是新手在使用的时候并没有考虑这么多，每次用的时候都实例化一次，这样我们就会占用许多内存，而且都是没什么意义的？因此如果使用单例模式对这个兑现进行封装一下，如果这个对象已经实例化过，那么就返回已经实例化的实例。实例化模式有两种模式，以下是使用IIFE（立即调用函数）实现版本：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+ * 单例模式（IIFE）
+ */</span>
+<span class="kd">const</span> <span class="nx">singleMode</span> <span class="o">=</span> <span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">isInstance</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="k">return</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">name</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">age</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">new</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a Constructor Function, please use new keyword!</span><span class="dl">'</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isInstance</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">isInstance</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">age</span> <span class="o">=</span> <span class="nx">age</span><span class="p">;</span>
+    <span class="nx">isInstance</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}());</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="观察者模式">观察者模式</h3>
+
+<p>在没有详细研究设计模式之前，听别人说观察者模式就是发布订阅模式，直到自己去研究的时候发现它们确实有渊源，但是并不是一个东西。观察者模式它（Subject）会维护一个依赖列表，当内容更新时会主动通知依赖列表里面的所有Observe。但是发布订阅模式是订阅者会在订阅中心订阅它关心的主题，而发布者会在订阅中心发布相关的主题消息，因此它们之间是有一个中间人（调度中心）。有一篇文章对观察者模式和发布订阅模式讲的很不错，我也是看了这篇文章才有所了解<a href="https://juejin.im/post/5a14e9edf265da4312808d86">观察者模式 vs 发布-订阅模式</a>，一下是观察者模式的一个图解（也是从上面那篇博文偷过来的，发布订阅模式的图解也偷自该博文）：</p>
+
+<p><img src="/img/post/2019/20190511/observe.png" alt="Observe" /></p>
+
+<p>下面是发布订阅模式的图解：</p>
+
+<p><img src="/img/post/2019/20190511/publish.png" alt="Publish_Subscribe" /></p>
+
+<p>从图中可以看出发布订阅模式明显比观察者模式多了一个环节，就是中间那一部分（调度中心），发布者和订阅者都只和调度中心相关。因此可以看出发布订阅模式与观察者模式的区别主要就是观察者模式Subject与Observe直接联系，而且双方各自知道对方的存在，但是发布订阅模式发布者和订阅者都只和调度中心有通信，订阅者和发布者并不清楚对方是否存在。</p>
+
+<p>说完了观察者模式和发布订阅模式的区别现在贴一个简单的观察者模式示例：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+ * 观察者模式/Subject类，必须使用new关键字进行实例化
+ * 观察者模式：维护一个依赖列表，当内容更新时主动通知，依赖列表里面的所有Observe。
+ */</span>
+<span class="kd">function</span> <span class="nx">Subject</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">new</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a Constructor Function, please use new keyword!</span><span class="dl">'</span><span class="p">);</span> <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">list</span> <span class="o">=</span> <span class="p">[];</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 由于每个Subject都有添加、删除和通知功能，为了节省资源消耗，所有实例共享这些方法。
+ * 但是重写prototype会丢失constructor属性，因此需要给constructor重新赋值
+ */</span>
+<span class="nx">Subject</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">constructor</span><span class="p">:</span> <span class="nx">Subject</span><span class="p">,</span>
+  <span class="nx">add</span> <span class="p">(</span><span class="nx">observe</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">observe</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">remove</span> <span class="p">(</span><span class="nx">observe</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">isAdd</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">observe</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">isAdd</span> <span class="o">===</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">you not have add Observe!</span><span class="dl">'</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">isAdd</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">notify</span> <span class="p">(</span><span class="nx">notice</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">len</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">list</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">update</span><span class="p">(</span><span class="nx">notice</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 观察者模式/Observe类，必须使用new关键字进行实例化
+ * @param {String} name Observe名字
+ */</span>
+<span class="kd">function</span> <span class="nx">Observe</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">new</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a Constructor Function, please use new keyword!</span><span class="dl">'</span><span class="p">);</span> <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 由于每个Observe都有update消息功能，为了节省资源消耗，所有实例共享这个方法。
+ * 但是重写prototype会丢失constructor属性，因此需要给constructor重新赋值
+ */</span>
+<span class="nx">Observe</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">constructor</span><span class="p">:</span> <span class="nx">Observe</span><span class="p">,</span>
+  <span class="nx">update</span> <span class="p">(</span><span class="nx">notice</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">My name is </span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">, I attention "</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">notice</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">" ready update!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h3 id="发布订阅模式">发布订阅模式</h3>
+
+<p>发布订阅模式在观察者模式上已经进行了解释，在这里就不进行说明了。其实发布订阅模式我觉得给它写成三部分是最好，一个发布者部分、一个订阅者部分和一个消息调度中心（当然你也可以只用一个部分实现，网上已经有了实现版本）；由于本人有点小懒，使以只写了两部分，发布者部分和调度中心共用了，其实主要是因为这个示例太简单了没办法拆开了，但我个人偏向分三部分写，因为这样既清晰扩展的时候只要改动相应部分就可以了，以下是发布订阅模式的示例（使用了单例模式的另一种实现，class关键词）：</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+</pre></td><td class="rouge-code"><pre><span class="cm">/**
+ * 发布-订阅模式
+ * 发布订阅模式：与观察者的区别在于发布订阅不直接与发布者关联，它有一个调度中心
+ * 订阅者只管在调度中心订阅就行，发布者只需要在调度中心发布通知。
+ */</span>
+<span class="kd">const</span> <span class="nx">PublishSubscribe</span> <span class="o">=</span> <span class="k">new</span> <span class="kd">class</span> <span class="p">{</span>
+  <span class="kd">constructor</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span> <span class="o">=</span> <span class="p">{}</span>
+  <span class="p">}</span>
+  <span class="nx">publish</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">mes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">(</span><span class="nx">event</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">))</span> <span class="p">{</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">not subscriber!</span><span class="dl">'</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">subscribes</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">];</span>
+    <span class="kd">const</span> <span class="nx">len</span> <span class="o">=</span> <span class="nx">subscribes</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">len</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">subscribes</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">notice</span><span class="p">(</span><span class="nx">mes</span><span class="p">);</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="nx">subscribe</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">sub</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">])</span> <span class="p">{</span> <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span> <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">sub</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="nx">unSubscribe</span> <span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">sub</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">haveEvent</span> <span class="o">=</span> <span class="nx">event</span> <span class="k">in</span> <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">isHave</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">].</span><span class="nx">indexOf</span><span class="p">(</span><span class="nx">sub</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">haveEvent</span> <span class="o">||</span> <span class="o">!~</span><span class="nx">isHave</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">alert</span><span class="p">(</span><span class="dl">'</span><span class="s1">you not subscribe: </span><span class="dl">'</span> <span class="o">+</span> <span class="nx">event</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">subscribeCenter</span><span class="p">[</span><span class="nx">event</span><span class="p">].</span><span class="nx">splice</span><span class="p">(</span><span class="nx">isHave</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 订阅者类，必须使用new关键字进行实例化
+ * @param {String} name Subscribe名字
+ */</span>
+<span class="kd">function</span> <span class="nx">Subscribe</span> <span class="p">(</span><span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">new</span><span class="p">.</span><span class="nx">target</span><span class="p">)</span> <span class="p">{</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a Constructor Function, please use new keyword!</span><span class="dl">'</span><span class="p">);</span> <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">=</span> <span class="nx">name</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 由于每个订阅者都有notice消息功能，为了节省资源消耗，所有实例共享这个方法。
+ * 但是重写prototype会丢失constructor属性，因此需要给constructor重新赋值
+ */</span>
+<span class="nx">Subscribe</span><span class="p">.</span><span class="nx">prototype</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">constructor</span><span class="p">:</span> <span class="nx">Subscribe</span><span class="p">,</span>
+  <span class="nx">notice</span> <span class="p">(</span><span class="nx">mes</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">My name is </span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">name</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">, I attention "</span><span class="dl">'</span> <span class="o">+</span> <span class="nx">mes</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">" ready update!</span><span class="dl">'</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>到此常用的几种设计模式已经讲完了。</p>
+
+                <!-- copyright start -->
+                <div>
+                    
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      is Q
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.isqqy.com/2019/05/12/design-mode/" title="js常用设计模式">https://www.isqqy.com/2019/05/12/design-mode/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用
+      <a
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+        rel="external nofollow"
+        target="_blank"
+      >
+        CC BY-NC-SA 3.0
+      </a>
+      许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+                </div>
+                <!-- copyright end -->
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/05/11/apk-digital-signature/" data-toggle="tooltip" data-placement="top" title="apk数字签名实践">
+                        Previous<br>
+                        <span>apk数字签名实践</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/05/20/webapp-offline-package/" data-toggle="tooltip" data-placement="top" title="调用Html5plus API实现具有原生功能的web App之离线打包踩坑">
+                        Next<br>
+                        <span>调用Html5plus API实现具有原生功能的web App之离线打包踩坑</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+                
+                <!-- Gitalk 评论框 start -->
+                <div id="gitalk-container"></div>
+                <!-- Gitalk 评论框 end -->
+                
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=%E8%AE%B0%E5%BD%95"
+                    title="记录"
+                    rel="6">记录</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="2">网络</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=HTTP1.1"
+                    title="HTTP1.1"
+                    rel="2">HTTP1.1
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="https://mapo.io/">Mapo</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    SVG: {
+      scale: 90
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- gitalk 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    async("//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js",function(){
+        var gitalk_clientID = "e9bbe5cab49497965c55";
+        var gitalk_clientSecret = "9275e5b23e992c045ea1b88cee2299fe5def3581";
+        var gitalk_repo = "mgblog-comment";
+        var gitalk_owner = "yang131323";
+        var gitalk_admin = "yang131323".split(',');
+        var gittalk_identifier = "/2019/05/12/design-mode";
+        console.log(gittalk_identifier);
+        var gitalk = new Gitalk({
+            clientID: gitalk_clientID,
+            clientSecret: gitalk_clientSecret,
+            repo: gitalk_repo,
+            owner: gitalk_owner,
+            admin: gitalk_admin,
+            id: gittalk_identifier,      // Ensure uniqueness and length less than 50
+            distractionFreeMode: true  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    })
+</script>
+<!-- gitalk 公共JS代码 end -->
+
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

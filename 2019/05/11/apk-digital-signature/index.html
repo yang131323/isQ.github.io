@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="apk数字签名实践 - is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="article">
+    <meta property="og:description" content="
+  apk数字签名实践之深入探索
+
+">
+    
+    <meta property="article:published_time" content="2019-05-11T01:22:00Z">
+    
+    
+    <meta property="article:author" content="is Q">
+    
+    
+    <meta property="article:tag" content="密码学">
+    
+    <meta property="article:tag" content="安全">
+    
+    <meta property="article:tag" content="记录">
+    
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/2019/05/11/apk-digital-signature/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>apk数字签名实践 - is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/2019/05/11/apk-digital-signature/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/post/2019/20190510/networkSecutity.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+
+
+
+<style type="text/css">
+    header.intro-header{
+        position: relative;
+        background-image: url('/img/post/2019/20190510/networkSecutity.jpg');
+        background: ;
+    }
+
+    
+</style>
+
+<header class="intro-header" >
+
+    <div class="header-mask"></div>
+    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/archive/?tag=%E5%AF%86%E7%A0%81%E5%AD%A6" title="密码学">密码学</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E5%AE%89%E5%85%A8" title="安全">安全</a>
+                        
+                        <a class="tag" href="/archive/?tag=%E8%AE%B0%E5%BD%95" title="记录">记录</a>
+                        
+                    </div>
+                    <h1>apk数字签名实践</h1>
+                    
+                    <h2 class="subheading">"之深入探索"</h2>
+                    <span class="meta">Posted by is Q on May 11, 2019</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+
+
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+                <!-- Multi-Lingual -->
+                
+
+				<blockquote>
+  <p>apk数字签名实践之深入探索</p>
+</blockquote>
+
+<h3 id="前言">前言</h3>
+
+<p>这段时间有一个对web app进行签名验证的一个需求，为了确保所下载的apk包来自于我们所信任的服务器，防止请求被劫持或者替换，由于暂时还是使用http协议在上https之前有一个过渡期，所以不得不考虑传输安全，毕竟http就是在整个网络上”裸奔”。</p>
+
+<h3 id="数字签名">数字签名</h3>
+
+<p>做这个之前我们首先得了解数字签名到底是什么，在做这个验签之前我也一直是处于听说过的状态中，所以做这个任务之前花了一点时间去了解一下。简单说数字签名只做一件事情，就是证明这个内容一定来自于某人，为什么呢？因为使用私钥进行签名，因此只有他自己能生成自己的签名（私钥被盗不算）。</p>
+
+<p>说这个数字签名之前我们首先简单提一下密码学的知识，加密方法大致分为两类：对称加密（加密和解密都使用一套密钥）、非对称加密（有两套密钥，一套私钥、一套公钥，私钥只有自己知道，公钥可以给其他人；一般发送方用公钥加密发送消息，而只有自己能够用私钥进行解密，以此达到安全传输消息的目的；而签名一般使用私钥，用公钥进行验证签名）。但是我在实现我的过程中发现了一个问题，网上大部分讲解数字签名的文章好像和真正的签名算法有所出入，最后在前组长以及查看《密码编码学与网络安全》数字签名这一章才让我有点清晰。</p>
+
+<p>网上的资料关于数字签名的流程主要为：服务器将内容进行hash得到内容的摘要，然后使用私钥加上摘要完成签名，然后将内容以及签名一起发给接收方，接收方收到之后使用服务器的公钥进行解密得到摘要一，然后再使用和服务器一样的hash算法对内容进行hash得到摘要二，然后对比两个摘要是否相等，如果相等就说明签名通过，不相等就验签失败。</p>
+
+<h3 id="实际运用并不顺利">实际运用并不顺利</h3>
+
+<p>带着认识开始做签名任务，发现在和后台对接的时候有点小差别，我理解的是要解密对比摘要，很后台说的验签有点出入（内容hash+公钥+签名代入签名验证算法）得出结果？最后查了一下资料发现数字签名的一般模型为：</p>
+
+<p><img src="/img/post/2019/20190510/signature_model.png" alt="数字签名基本模型" /></p>
+
+<p>根据这个模型来看，第一部分理解都是没有问题的，但是问题就是处在验签过程，图上是直接使用使用内容hash+签名代入签名验证算法得出结果，和后台理解的完美贴合。看到这里我就更加疑惑了，难道网上的资料都有问题？而且维基给出来的数字签名原理和我以前理解的一样，如下图：</p>
+
+<p><img src="/img/post/2019/20190510/digital_signature.svg.png" alt="维基数字签名原理" /></p>
+
+<p>第一部分和上图的过程一摸一样，唯一的区别就是验签过程。出于找到原因的目的继续在《密码编码学与网络安全》这本书中寻找原因，最终找到了影子：</p>
+
+<p><img src="/img/post/2019/20190510/signature_method.png" alt="两种签名方法" /></p>
+
+<p>RSA方法：hash函数的输入是要签名的消息，输出是定长的hash码（前H），用发送发的私钥（PRa）将该Hash码加密形成签名，然后发送消息及其签名。接收方收到消息后计算hash码（后H），并且使用发送方的公钥对签名解密，如果计算出的Hash码与解密出结果相同，则认为签名是有效的。因为只有发送方拥有私钥，所以只有发送方能够产生有效的私钥。
+DSA方法：DSA采用hash函数，得到hash码，它以hash码和为此次签名产生的随机数（k）作为签名函数的输入，签名函数依赖于发送发的私钥（PRa）和一组参数，这一组参数为通信伙伴共有，可以认为这组参数构成全局公钥（PUG）。接受方，对接收到的消息产生hash，这个hash码和签名一起作为验证函数的输入，验证函数依赖于全局公钥和发送方公钥（PUa）。若验证函数的输出等于r成分则签名有效。</p>
+
+<p>最后我的理解是：数字签名的模型是上图13.1这样的，但是在实现方式上是可以调整，因此网上的大部分资料应该都是相对于某一种签名方式来说的，而不是对签名过程进行分析。</p>
+
+<h3 id="apk签名实践">apk签名实践</h3>
+
+<p>这里我只说前端方向，在这个任务中我采用的就是一般模型的基本流程，先生成一套RSA公私钥，前端直接将公钥硬编码。后端读取apk（buffer读取）并将内容进行hash（前后端协商使用sha256），依赖发送方的私钥将hash码代入签名函数，得到签名；把apk和签名一起发给前端，前端首先下载apk，然后读取apk文件（前端读取可以文本形式、dataurl形式、ArrayBuffer形式），前后端读取形式不同验签一定失败，由于后台使用的是buffer读取，因此前端也只能采用buffer读取。⚠️（crypto-js中sha256不支持原生的ArrayBuffer，最后选择js-sha256，签名验证库：jsencrypt，除了文档不太友好之外都挺不错，自带一个测试demo）。文件读取方式统不统一就决定了此次签名能不能成功。</p>
+
+<p>以上都是个人理解。</p>
+
+                <!-- copyright start -->
+                <div>
+                    
+  <ul class="post-copyright">
+    <li class="post-copyright-author">
+      <strong>本文作者：</strong>
+      is Q
+    </li>
+    <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.isqqy.com/2019/05/11/apk-digital-signature/" title="apk数字签名实践">https://www.isqqy.com/2019/05/11/apk-digital-signature/</a>
+    </li>
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong>
+      本博客所有文章除特别声明外，均采用
+      <a
+        href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+        rel="external nofollow"
+        target="_blank"
+      >
+        CC BY-NC-SA 3.0
+      </a>
+      许可协议。转载请注明出处！
+    </li>
+  </ul>
+
+
+                </div>
+                <!-- copyright end -->
+                <hr style="visibility: hidden;">
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2019/05/03/DNS-parse-progress/" data-toggle="tooltip" data-placement="top" title="DNS解析过程">
+                        Previous<br>
+                        <span>DNS解析过程</span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2019/05/12/design-mode/" data-toggle="tooltip" data-placement="top" title="js常用设计模式">
+                        Next<br>
+                        <span>js常用设计模式</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <hr style="visibility: hidden;">
+
+                
+
+                
+
+                
+                <!-- Gitalk 评论框 start -->
+                <div id="gitalk-container"></div>
+                <!-- Gitalk 评论框 end -->
+                
+                
+            </div>  
+
+    <!-- Side Catalog Container -->
+        
+            <div class="
+                col-lg-2 col-lg-offset-0
+                visible-lg-block
+                sidebar-container
+                catalog-container">
+                <div class="side-catalog">
+                    <hr class="hidden-sm hidden-xs">
+                    <h5>
+                        <a class="catalog-toggle" href="#">CATALOG</a>
+                    </h5>
+                    <ul class="catalog-body"></ul>
+                </div>
+            </div>
+        
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+        <hr class="hidden-sm hidden-xs">
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=%E8%AE%B0%E5%BD%95"
+                    title="记录"
+                    rel="6">记录</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="2">网络</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=HTTP1.1"
+                    title="HTTP1.1"
+                    rel="2">HTTP1.1
+    </div>
+</section>
+
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="https://mapo.io/">Mapo</a></li>
+  
+</ul>
+
+            </div>
+        </div>
+    </div>
+</article>
+
+<!-- add support for mathjax by voleking-->
+
+  <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: {
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    },
+    SVG: {
+      scale: 90
+    },
+    tex2jax: {
+      inlineMath: [ ['$','$'] ],
+      displayMath: [ ['$$','$$'] ],
+      processEscapes: true,
+    }
+  });
+</script>
+<script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG">
+</script>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+
+<!-- gitalk 公共JS代码 start (一个网页只需插入一次) -->
+<script type="text/javascript">
+    async("//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js",function(){
+        var gitalk_clientID = "e9bbe5cab49497965c55";
+        var gitalk_clientSecret = "9275e5b23e992c045ea1b88cee2299fe5def3581";
+        var gitalk_repo = "mgblog-comment";
+        var gitalk_owner = "yang131323";
+        var gitalk_admin = "yang131323".split(',');
+        var gittalk_identifier = "/2019/05/11/apk-digital-signature";
+        console.log(gittalk_identifier);
+        var gitalk = new Gitalk({
+            clientID: gitalk_clientID,
+            clientSecret: gitalk_clientSecret,
+            repo: gitalk_repo,
+            owner: gitalk_owner,
+            admin: gitalk_admin,
+            id: gittalk_identifier,      // Ensure uniqueness and length less than 50
+            distractionFreeMode: true  // Facebook-like distraction free mode
+        })
+
+        gitalk.render('gitalk-container')
+    })
+</script>
+<!-- gitalk 公共JS代码 end -->
+
+
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+<script type="text/javascript">
+    function generateCatalog (selector) {
+
+        // interop with multilangual 
+        if ('' == 'true') {
+            _containerSelector = 'div.post-container.active'
+        } else {
+            _containerSelector = 'div.post-container'
+        }
+
+        // init
+        var P = $(_containerSelector),a,n,t,l,i,c;
+        a = P.find('h1,h2,h3,h4,h5,h6');
+
+        // clean
+        $(selector).html('')
+
+        // appending
+        a.each(function () {
+            n = $(this).prop('tagName').toLowerCase();
+            i = "#"+$(this).prop('id');
+            t = $(this).text();
+            c = $('<a href="'+i+'" rel="nofollow">'+t+'</a>');
+            l = $('<li class="'+n+'_nav"></li>').append(c);
+            $(selector).append(l);
+        });
+        return true;
+    }
+
+    generateCatalog(".catalog-body");
+
+    // toggle side catalog
+    $(".catalog-toggle").click((function(e){
+        e.preventDefault();
+        $('.side-catalog').toggleClass("fold")
+    }))
+
+    /*
+     * Doc: https://github.com/davist11/jQuery-One-Page-Nav
+     * Fork by Hux to support padding
+     */
+    async("/js/jquery.nav.js", function () {
+        $('.catalog-body').onePageNav({
+            currentClass: "active",
+            changeHash: !1,
+            easing: "swing",
+            filter: "",
+            scrollSpeed: 700,
+            scrollOffset: 0,
+            scrollThreshold: .2,
+            begin: null,
+            end: null,
+            scrollChange: null,
+            padding: 80
+        });
+    });
+</script>
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

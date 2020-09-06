@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Archive - is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="keep hungry keep foolish">
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/archive/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>Archive - is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/archive/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- 
+Credits: this page shamelessly borrowed a lot from:
+https://github.com/kitian616/jekyll-TeXt-theme
+-->
+<!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/archive-bg.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading" id="tag-heading">
+        
+          <h1>Archive</h1>
+          <span class="subheading">keep hungry keep foolish</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+		<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+			<!-- Tags (as filter) -->
+			<div id='tag_cloud' class="tags tags-sup js-tags">
+				<a class="tag-button--all" data-encode="">
+					Show All
+					<sup>9</sup>
+				</a>
+
+				
+        
+				
+				</a>
+				
+				<a data-sort="0003"
+					data-encode="%E8%AE%B0%E5%BD%95"
+					class="tag-button"
+					title="记录" rel="6">
+					记录
+					<sup>6</sup>
+				</a>
+				
+				<a data-sort="0007"
+					data-encode="%E7%BD%91%E7%BB%9C"
+					class="tag-button"
+					title="网络" rel="2">
+					网络
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0007"
+					data-encode="HTTP1.1"
+					class="tag-button"
+					title="HTTP1.1" rel="2">
+					HTTP1.1
+					<sup>2</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E5%AE%89%E5%85%A8"
+					class="tag-button"
+					title="安全" rel="1">
+					安全
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E5%AF%86%E7%A0%81%E5%AD%A6"
+					class="tag-button"
+					title="密码学" rel="1">
+					密码学
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E5%BC%80%E5%A7%8B"
+					class="tag-button"
+					title="开始" rel="1">
+					开始
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E7%8A%B6%E6%80%81%E7%A0%81"
+					class="tag-button"
+					title="状态码" rel="1">
+					状态码
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E7%A6%BB%E7%BA%BF%E6%89%93%E5%8C%85"
+					class="tag-button"
+					title="离线打包" rel="1">
+					离线打包
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C"
+					class="tag-button"
+					title="计算机网络" rel="1">
+					计算机网络
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F"
+					class="tag-button"
+					title="设计模式" rel="1">
+					设计模式
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="%E9%A6%96%E9%83%A8"
+					class="tag-button"
+					title="首部" rel="1">
+					首部
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="5%2B+APP"
+					class="tag-button"
+					title="5+ APP" rel="1">
+					5+ APP
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="CSS"
+					class="tag-button"
+					title="CSS" rel="1">
+					CSS
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="CentOS"
+					class="tag-button"
+					title="CentOS" rel="1">
+					CentOS
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="HTML5plus"
+					class="tag-button"
+					title="HTML5plus" rel="1">
+					HTML5plus
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="NAS"
+					class="tag-button"
+					title="NAS" rel="1">
+					NAS
+					<sup>1</sup>
+				</a>
+				
+				<a data-sort="0008"
+					data-encode="apk"
+					class="tag-button"
+					title="apk" rel="1">
+					apk
+					<sup>1</sup>
+				
+			</div>
+
+            <!-- Article List -->
+			<div class="mini-post-list js-result d-none"><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2020</span>
+				</span><div class="post-preview item" data-tags="NAS,CentOS">
+				    <a href="/2020/09/07/at-centos-zero-start-nas/">
+				        <h2 class="post-title">
+                            在centos从0开始搭建属于自己的NAS
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            （上）
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E7%BD%91%E7%BB%9C,HTTP1.1,%E9%A6%96%E9%83%A8">
+				    <a href="/2020/06/28/http-headers/">
+				        <h2 class="post-title">
+                            HTTP1.1 Headers速查清单
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "HTTP首部及其使用场景解析"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E7%BD%91%E7%BB%9C,HTTP1.1,%E7%8A%B6%E6%80%81%E7%A0%81">
+				    <a href="/2020/06/21/http-status-code-list/">
+				        <h2 class="post-title">
+                            HTTP1.1状态码速查清单
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "状态码及其使用场景详解"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			</section><section>
+				<span class="fa listing-seperator">
+					<span class="tag-text">2019</span>
+				</span><div class="post-preview item" data-tags="5%2B+APP,HTML5plus,apk,%E7%A6%BB%E7%BA%BF%E6%89%93%E5%8C%85,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/05/20/webapp-offline-package/">
+				        <h2 class="post-title">
+                            调用Html5plus API实现具有原生功能的web App之离线打包踩坑
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "路漫漫其修远兮，吾将上下而求索"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/05/12/design-mode/">
+				        <h2 class="post-title">
+                            js常用设计模式
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "之实战"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E5%AF%86%E7%A0%81%E5%AD%A6,%E5%AE%89%E5%85%A8,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/05/11/apk-digital-signature/">
+				        <h2 class="post-title">
+                            apk数字签名实践
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "之深入探索"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/05/03/DNS-parse-progress/">
+				        <h2 class="post-title">
+                            DNS解析过程
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				            "之理解迭代查询和递归查询"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="CSS,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/04/27/css-figure/">
+				        <h2 class="post-title">
+                            使用CSS生成常见图形
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				             "之实现原理"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			<div class="post-preview item" data-tags="%E5%BC%80%E5%A7%8B,%E8%AE%B0%E5%BD%95">
+				    <a href="/2019/04/06/test/">
+				        <h2 class="post-title">
+                            这是一个测试文章
+				        </h2>
+				        
+				        <h3 class="post-subtitle">
+				             "开始很难，坚持也很难"
+				        </h3>
+				        
+				    </a>
+					<hr>
+				</div>
+			
+		</div>
+	</div>
+</div>
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+<!-- jquery.tagcloud.js -->
+<script>
+    async('/js/jquery.tagcloud.js',function(){
+        $.fn.tagcloud.defaults = {
+            //size: {start: 1, end: 1, unit: 'em'},
+            color: {start: '#bbbbee', end: '#2f93b4'},
+        };
+        $('#tag_cloud a').tagcloud();
+    })
+</script>
+<script src='/js/archive.js '></script>
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

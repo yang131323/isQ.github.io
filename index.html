@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="description" content="你听好了，趁着年轻什么都别管 | is Q，Node.js & Vue.js Developer ">
+    <meta name="keywords"  content="is Q, is Q博客, is Q Blog, 博客, 个人网站, 互联网, Web, JavaScript, 前端, Node.js">
+    <meta name="theme-color" content="#000000">
+    <meta name="author" content="is Q">
+    <meta http-equiv="windows-Target" content="_top">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="is Q的博客 | is Q Blog">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="你听好了，趁着年轻什么都别管">
+    
+    <meta property="og:image" content="https://www.isqqy.com/img/avatar.png">
+    <meta property="og:url" content="https://www.isqqy.com/">
+    <meta property="og:site_name" content="is Q的博客 | is Q Blog">
+    
+    <title>is Q的博客 | is Q Blog</title>
+
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="/pwa/manifest.json">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="/img/isQ.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://www.isqqy.com/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">is Q</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    <li>
+                        <a href="/about/">Flag</a>
+                    </li>
+                    
+                    
+                    
+                    <li>
+                        <a href="/archive/">Archive</a>
+                    </li>
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    var __HuxNav__ = {
+        close: function(){
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        },
+        open: function(){
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+
+    // Bind Event
+    $toggle.addEventListener('click', function(e){
+        if ($navbar.className.indexOf('in') > 0) {
+            __HuxNav__.close()
+        }else{
+            __HuxNav__.open()
+        }
+    })
+
+    /**
+     * Since Fastclick is used to delegate 'touchstart' globally
+     * to hack 300ms delay in iOS by performing a fake 'click',
+     * Using 'e.stopPropagation' to stop 'touchstart' event from 
+     * $toggle/$collapse will break global delegation.
+     * 
+     * Instead, we use a 'e.target' filter to prevent handler
+     * added to document close HuxNav.  
+     *
+     * Also, we use 'click' instead of 'touchstart' as compromise
+     */
+    document.addEventListener('click', function(e){
+        if(e.target == $toggle) return;
+        if(e.target.className == 'icon-bar') return;
+        __HuxNav__.close();
+    })
+</script>
+
+
+    <!-- Page Header -->
+
+
+
+
+
+
+
+<header class="intro-header" style="background-image: url('/img/home-bg-ship.jpg')">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+        
+        <div class="site-heading">
+        
+          <h1>is Q</h1>
+          <span class="subheading">你听好了，趁着年轻什么都别管</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+
+<!-- Main Content -->
+<div class="container">
+	<div class="row">
+        
+
+<!-- USE SIDEBAR -->
+    <!-- PostList Container -->
+    		<div class="
+                col-lg-8 col-lg-offset-1
+                col-md-8 col-md-offset-1
+                col-sm-12
+                col-xs-12
+                postlist-container
+            ">
+    			
+<div class="post-preview">
+    <a href="/2020/09/07/at-centos-zero-start-nas/">
+        <h2 class="post-title">
+            在centos从0开始搭建属于自己的NAS
+        </h2>
+        
+        <h3 class="post-subtitle">
+            （上）
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                主要内容
+
+
+  主要内容
+    
+      物理设备选择
+      系统搭建
+        
+          安装准备工作
+          安装系统
+          遇到的问题
+        
+      
+    
+  
+
+
+物理设备选择
+
+​	搭建NAS最简单的方式就是直接买群晖一套，但是价格比较贵，自定义范围比较窄。虽然群晖已经帮我们把硬件选择和系统都已经装好了...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on September 7, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/06/28/http-headers/">
+        <h2 class="post-title">
+            HTTP1.1 Headers速查清单
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "HTTP首部及其使用场景解析"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  作为一个程序猿，了解常用的HTTP首部的意思及它的使用场景是必须的，但是由于http首部数量太多，平常经常接触到的就那么一些，不常用的很容易忘记具体意思，为了方便查看特整理如下。
+
+
+快速导航
+
+  快速导航
+  通用首部
+    
+      通用信息性首部
+      通用缓存首部
+    
+  
+  请求首部
+    
+      请求信息性首部
+      条件请求首部
+   ...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on June 28, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2020/06/21/http-status-code-list/">
+        <h2 class="post-title">
+            HTTP1.1状态码速查清单
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "状态码及其使用场景详解"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  任何一个开发者都会接触到HTTP状态码，但是规范已经定义的状态码数量较多，经常会忘记，这篇文章就是提供一个速查手册。
+
+
+快速索引
+
+  100 - 101信息状态码
+  200 - 206成功状态码
+  300—307重定向状态码
+  400—417客户端错误状态码
+  500—505服务器错误状态码
+
+
+http状态码由三位数字组成，第一位代表状态所属的类型，目前分为五大类：
+
+
+...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on June 21, 2020
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/05/20/webapp-offline-package/">
+        <h2 class="post-title">
+            调用Html5plus API实现具有原生功能的web App之离线打包踩坑
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "路漫漫其修远兮，吾将上下而求索"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  “路漫漫其修远兮，吾将上下而求索”
+
+
+前言
+这是在一个原有web项目上进行的一成封装，使其成为一个apk格式的安装包，还可以在你的web项目中调用Html5plus Api来实现一些原生功能，官方文档html5+规范，请慎重入坑，主要是官方文档写的不太好以及几乎没有社区，只能自己一个一个的爬。
+以前我们的一个5+应用都是使用hbuilder进行云打包的，但是最近快要上线了，所以需要对...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on May 20, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/05/12/design-mode/">
+        <h2 class="post-title">
+            js常用设计模式
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "之实战"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  js常用设计模式之实战
+
+
+适配器模式
+
+适配器模式就是充当着一个转换器的作用。举个例子吧，比如我们有一个只有VGA接口的显示器，但是现在我们电脑一般都只支持HDMI接口，这时怎么办？对，就是找一个转换器，将显示器和电脑链接起来。而我们的适配器模式和这个转换器的功能相同。适配器模式前端应该是经常使用的，根据reshful接口风格，传回来的数据字段都是前后端协商的，难免后台有改动的时候，...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on May 12, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/05/11/apk-digital-signature/">
+        <h2 class="post-title">
+            apk数字签名实践
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "之深入探索"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  apk数字签名实践之深入探索
+
+
+前言
+
+这段时间有一个对web app进行签名验证的一个需求，为了确保所下载的apk包来自于我们所信任的服务器，防止请求被劫持或者替换，由于暂时还是使用http协议在上https之前有一个过渡期，所以不得不考虑传输安全，毕竟http就是在整个网络上”裸奔”。
+
+数字签名
+
+做这个之前我们首先得了解数字签名到底是什么，在做这个验签之前我也一直是处于听说过...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on May 11, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/05/03/DNS-parse-progress/">
+        <h2 class="post-title">
+            DNS解析过程
+        </h2>
+        
+        <h3 class="post-subtitle">
+            "之理解迭代查询和递归查询"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  DNS解析过程
+
+
+前言
+
+为了了解DNS解析的整个过程，但是我查看了一些博文，但都不是我想要的结果，要么讲的很浅显，要么就是那种专门做计算机网络才能看得懂得文章，因此为了避免以后自己忘掉，把这次的理解总结一下。
+
+迭代查询和递归查询
+
+DNS大致解析过程如下：
+
+
+首先我先说一下我对DNS递归查询以及迭代查询的理解：DNS的解析过程默认是采用递归查询，也就是一层一层的传递下去，但是如...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on May 3, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/04/27/css-figure/">
+        <h2 class="post-title">
+            使用CSS生成常见图形
+        </h2>
+        
+        <h3 class="post-subtitle">
+             "之实现原理"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  css面试题之生成各种常见图形
+
+
+前言
+
+最近一直在看面试题，发现了一些有趣的东西，有很多东西以前不是很懂，都停留在使用的层次上，所以现在开始恶补基础。刚好了看到了一个面试题，感觉以前没有对这个知识点了解的深入，因此现在做个笔记，防止自己忘记。
+
+css图形实现原理
+
+如果你是一名前端开发人员，那么你一定熟悉css吧！那你试一下用纯css实现一个三角形、五角星、平行四边形？用css生...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on April 27, 2019
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2019/04/06/test/">
+        <h2 class="post-title">
+            这是一个测试文章
+        </h2>
+        
+        <h3 class="post-subtitle">
+             "开始很难，坚持也很难"
+        </h3>
+        
+        <div class="post-content-preview">
+            
+                
+  “测试成功了”
+
+
+前言
+
+而后 Google 上查了下，发现国内有一个代码托管平台叫 Coding ，也可以将个人的 Hexo 博客托管到平台上，然后有点激动，说时迟那时快，立刻动手尝试将自己的个人博客托管到 Coding 上，中间遇到很多坑，折腾好久，最终成功，特此记录。
+据了解，之前很多人都是把博客托管到国内的 gitcafe上，后来 gitcafe 被 Coding 收购。当然...
+            
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by is Q on April 6, 2019
+    </p>
+</div>
+<hr>
+
+
+<!-- Pager -->
+
+
+    		</div>
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-3 col-lg-offset-0
+                col-md-3 col-md-offset-0
+                col-sm-12
+                col-xs-12
+                sidebar-container
+            ">
+                <!-- Featured Tags -->
+                
+
+
+<section>
+    
+    <h5><a href="/archive/">FEATURED TAGS</a></h5>
+    <div class="tags">
+        
+        
+        
+        </a>
+        
+        
+                <a data-sort="0003" 
+                    href="/archive/?tag=%E8%AE%B0%E5%BD%95"
+                    title="记录"
+                    rel="6">记录</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=%E7%BD%91%E7%BB%9C"
+                    title="网络"
+                    rel="2">网络</a>
+        
+                <a data-sort="0007" 
+                    href="/archive/?tag=HTTP1.1"
+                    title="HTTP1.1"
+                    rel="2">HTTP1.1
+    </div>
+</section>
+
+
+                <!-- Short About -->
+                <section class="visible-md visible-lg">
+  <hr>
+  <h5><a href="/about/">ABOUT ME</a></h5>
+  <div class="short-about">
+    
+    <img src="/img/avatar.png" />
+    
+    
+    <p>趁着年轻，做点事情</p>
+    
+    <!-- SNS Link -->
+    
+
+
+<ul class="list-inline">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+  </div>
+</section>
+
+                <!-- Friends Blog -->
+                
+<hr>
+<h5>FRIENDS</h5>
+<ul class="list-inline">
+  
+  <li><a href="https://mapo.io/">Mapo</a></li>
+  
+</ul>
+
+    		</div>
+        
+	</div>
+</div>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <!-- SNS Link -->
+                
+
+
+<ul class="list-inline text-center">
+
+
+  
+  <li>
+    <a href="/feed.xml">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-rss fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://www.zhihu.com/people/willking-7">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa  fa-stack-1x fa-inverse">知</i>
+      </span>
+    </a>
+  </li>
+  
+  
+  
+  
+  <li>
+    <a target="_blank" href="https://github.com/yang131323">
+      <span class="fa-stack fa-lg">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+      </span>
+    </a>
+  </li>
+  
+  
+</ul>
+
+                <p class="copyright text-muted">
+                    Copyright &copy; is Q 2020
+                    <br>
+                    Powered by <a href="https://jekyllrb.com">Jekyll</a> | Designed By <a href="http://huangxuan.me">Hux</a>
+                    <!-- <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="100px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=huxpro&repo=huxpro.github.io&type=star&count=true" >
+                    </iframe> -->
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<!-- Currently, only navbar scroll-down effect at desktop still depends on this -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+<!-- Service Worker -->
+
+<script src="/js/snackbar.js "></script>
+<script src="/js/sw-registration.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!--
+     Because of the native support for backtick-style fenced code blocks
+     right within the Markdown is landed in Github Pages,
+     From V1.6, There is no need for Highlight.js,
+     so Huxblog drops it officially.
+
+     - https://github.com/blog/2100-github-pages-now-faster-and-simpler-with-jekyll-3-0
+     - https://help.github.com/articles/creating-and-highlighting-code-blocks/
+     - https://github.com/jneen/rouge/wiki/list-of-supported-languages-and-lexers
+-->
+<!--
+    <script>
+        async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+            hljs.initHighlightingOnLoad();
+        })
+    </script>
+    <link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+-->
+
+
+
+
+
+<!--fastClick.js -->
+<script>
+    async("//cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-137551468-1';
+    var _gaDomain = 'mapo.io';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+
+
+<!-- Side Catalog -->
+
+
+
+<!-- Multi-Lingual -->
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>
