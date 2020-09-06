@@ -10,6 +10,8 @@
 
 4. 更多详细命令可以查看[jekyll 官网](https://jekyllcn.com/docs/usage/)，*需要科学上网*。
 
+5. 在_posts目录下写文章，在img文件下放置想关图片。
+
 
 ### [我的博客在这里 &rarr;](http://huxpro.github.io)
 
